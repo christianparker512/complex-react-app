@@ -1,22 +1,35 @@
-import React from "react"
+import React, {useState} from "react"
 import ReactDOM from "react-dom"
 
 //my components
 import Header from "./components/Header"
+import Home from "./components/Home"
 import HomeGuest from "./components/HomeGuest"
 import Footer from "./components/Footer"
 import About from "./components/About"
 import Terms from "./components/Terms"
 
 function Main () {
+  const [loggedIn, setLoggedIn]=useState(Boolean(localStorage.getItem("complexappToken")))
   return (
     <>
-      <Header />
-      <About />
-      <HomeGuest />
-      <Terms />
-      
-      <Footer />
+    <BrowserRouter>
+      <Header loggedIn={loggedIn} setLoggedIn={setLoggedIn}/>
+        <Switch>
+          <Route path="/" exact>
+            {loggedIn ? <Home /> : <HomeGuest />}
+            <Home />
+          </Route>
+          <Route path="/about-us">
+            <About />
+          </Route>
+          <Route path="/terms">
+            <Terms />
+          </Route>
+          </Switch>
+          <Footer />
+   
+      </BrowserRouter>
 
     </>
   )
