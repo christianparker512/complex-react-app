@@ -8,6 +8,7 @@ import HomeGuest from "./components/HomeGuest"
 import Footer from "./components/Footer"
 import About from "./components/About"
 import Terms from "./components/Terms"
+import CreatePost from "./components/CreatePost"
 
 function Main () {
   const [loggedIn, setLoggedIn]=useState(Boolean(localStorage.getItem("complexappToken")))
@@ -18,7 +19,10 @@ function Main () {
         <Switch>
           <Route path="/" exact>
             {loggedIn ? <Home /> : <HomeGuest />}
-            <Home />
+  
+            </Route>
+          <Route path="/create-post">
+            <CreatePost />
           </Route>
           <Route path="/about-us">
             <About />
@@ -40,3 +44,4 @@ ReactDOM.render(<Main />, document.querySelector("#app"))
 if (module.hot) {
   module.hot.accept()
 }
+
