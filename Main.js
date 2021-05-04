@@ -14,6 +14,7 @@ import Terms from "./components/Terms"
 import CreatePost from "./components/CreatePost"
 import ViewSinglePost from "./components/ViewSinglePost"
 import FlashMessages from './components/FlashMessages'
+import ExampleContext from './ExampleContext'
 
 function Main () {
   const [loggedIn, setLoggedIn]=useState(Boolean(localStorage.getItem("complexappToken")))
@@ -23,7 +24,7 @@ function Main () {
   setFlashMessages(prev =>  prev.concat(msg))
 }  
 return (
-    <>
+    <ExampleContext.Context.Provider value={addFlashMessage}>
     <BrowserRouter>
       <FlashMessages messages={flashMessages}/>
       <Header loggedIn={loggedIn} setLoggedIn={setLoggedIn}/>
@@ -35,7 +36,7 @@ return (
               <ViewSinglePost />
             </Route>
           <Route path="/create-post">
-            <CreatePost addFlashMessage={addFlashMessage}/>
+            <CreatePost />
           </Route>
           <Route path="/about-us">
             <About />
@@ -45,10 +46,9 @@ return (
           </Route>
           </Switch>
           <Footer />
-   
-      </BrowserRouter>
 
-    </>
+      </BrowserRouter>
+      </ExampleContext.Context.Provider>
   )
 }
 
