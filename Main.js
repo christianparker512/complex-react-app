@@ -17,21 +17,25 @@ import FlashMessages from './components/FlashMessages'
 
 function Main () {
   const [loggedIn, setLoggedIn]=useState(Boolean(localStorage.getItem("complexappToken")))
-  return (
+  const [flashMessages, setFlashMessages] = useState([])
+
+  function addFlashMessage(msg){
+  setFlashMessages(prev =>  prev.concat(msg))
+}  
+return (
     <>
     <BrowserRouter>
-      <FlashMessages />
+      <FlashMessages messages={flashMessages}/>
       <Header loggedIn={loggedIn} setLoggedIn={setLoggedIn}/>
         <Switch>
           <Route path="/" exact>
             {loggedIn ? <Home /> : <HomeGuest />}
-  
             </Route>
             <Route path="/post/:id">
               <ViewSinglePost />
             </Route>
           <Route path="/create-post">
-            <CreatePost />
+            <CreatePost addFlashMessage={addFlashMessage}/>
           </Route>
           <Route path="/about-us">
             <About />
