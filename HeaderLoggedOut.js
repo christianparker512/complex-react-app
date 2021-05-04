@@ -1,15 +1,16 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, useContext } from "react"
 import Axios from 'axios'
 import { copyFile } from "fs-extra"
 
 function HeaderLoggedOut(props) {
   const [username, setUsername]= useState()
   const [password,setPassword] = useState()
+  const {setLoggedIn} = useContext(ExampleContext)
 
   async function handleSubmit(e) {
     e.preventDefault()
     try {
-      const response = await Axios.post('http://localhost:8080/login', {username, password})
+      const response = await Axios.post('/login', {username, password})
       if(response.data) {
         localStorage.setItem("complexappToken",response.data.token)
         localStorage.setItem("complexappUsername",response.data.username)
