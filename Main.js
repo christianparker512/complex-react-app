@@ -1,4 +1,4 @@
-import React, {useState} from "react"
+import React, {useState, useReducer} from "react"
 import ReactDOM from "react-dom"
 import {BrowserRouter, Switch, Route} from "react-router-dom"
 import Axios from 'axios'
@@ -17,6 +17,23 @@ import FlashMessages from './components/FlashMessages'
 import ExampleContext from './ExampleContext'
 
 function Main () {
+  const initialState = {
+    loggedIn: Boolean(localStorage.getItem("complexappToken")), 
+    flashMessages: []
+  }
+  function ourReducer (){
+    switch (action.type){
+      case "login":
+        return {loggedIn: true, flashMessages: state.flashMessages} 
+      case "logout":
+        return {loggedIn: false, flashMessages: state.flashMessages} 
+      case "flashMessage":
+        return {loggedIn: state.loggedIn, flashMessages: state.flashMessages.concat(action.value)}
+    }
+    
+  }
+
+  const [state, dispatch]= useReducer(ourReducer, intialState)
   const [loggedIn, setLoggedIn]=useState(Boolean(localStorage.getItem("complexappToken")))
   const [flashMessages, setFlashMessages] = useState([])
 
@@ -24,10 +41,10 @@ function Main () {
   setFlashMessages(prev =>  prev.concat(msg))
 }  
 return (
-    <ExampleContext.Context.Provider value={addFlashMessage}>
+    <ExampleContext.Context.Provider value={{addFlashMessage, setLoggedIn}}>
     <BrowserRouter>
       <FlashMessages messages={flashMessages}/>
-      <Header loggedIn={loggedIn} setLoggedIn={setLoggedIn}/>
+      <Header loggedIn={loggedIn} />
         <Switch>
           <Route path="/" exact>
             {loggedIn ? <Home /> : <HomeGuest />}
@@ -36,7 +53,7 @@ return (
               <ViewSinglePost />
             </Route>
           <Route path="/create-post">
-            <CreatePost />
+            <CreatePost addFlashMessage={addFlashMessage}/>
           </Route>
           <Route path="/about-us">
             <About />
@@ -53,11 +70,6 @@ return (
 }
 
 ReactDOM.render(<Main />, document.querySelector("#app"))
-
-if (module.hot) {
-  module.hot.accept()
-}
-
 
 if (module.hot) {
   module.hot.accept()
