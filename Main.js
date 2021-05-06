@@ -1,8 +1,11 @@
-import React, {useState, useReducer} from "react"
+import React, {useState, useContext} from "react"
 import ReactDOM from "react-dom"
 import {BrowserRouter, Switch, Route} from "react-router-dom"
 import Axios from 'axios'
 Axios.defaults.baseURL = 'http://localhost:8080'
+
+import StateContext from './StateContext'
+import DispatchContext from './DispatchContext'
 
 //my components
 import Header from "./components/Header"
@@ -14,7 +17,6 @@ import Terms from "./components/Terms"
 import CreatePost from "./components/CreatePost"
 import ViewSinglePost from "./components/ViewSinglePost"
 import FlashMessages from './components/FlashMessages'
-import ExampleContext from './ExampleContext'
 
 function Main () {
   const initialState = {
@@ -34,20 +36,17 @@ function Main () {
   }
 
   const [state, dispatch]= useReducer(ourReducer, intialState)
-  const [loggedIn, setLoggedIn]=useState(Boolean(localStorage.getItem("complexappToken")))
-  const [flashMessages, setFlashMessages] = useState([])
+ 
 
-  function addFlashMessage(msg){
-  setFlashMessages(prev =>  prev.concat(msg))
-}  
 return (
-    <ExampleContext.Context.Provider value={{addFlashMessage, setLoggedIn}}>
+   <StateContext.Provider value={state}>
+     <DispatchContext.Provider value ={dispatch}>
     <BrowserRouter>
-      <FlashMessages messages={flashMessages}/>
-      <Header loggedIn={loggedIn} />
+      <FlashMessages messages={state.flashMessages}/>
+      <Header />
         <Switch>
           <Route path="/" exact>
-            {loggedIn ? <Home /> : <HomeGuest />}
+            {state.loggedIn ? <Home /> : <HomeGuest />}
             </Route>
             <Route path="/post/:id">
               <ViewSinglePost />
@@ -65,7 +64,8 @@ return (
           <Footer />
 
       </BrowserRouter>
-      </ExampleContext.Context.Provider>
+      </DispatchContext.Provider>
+      </StateContext.Provider>
   )
 }
 
