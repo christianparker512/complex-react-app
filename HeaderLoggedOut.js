@@ -17,10 +17,10 @@ function HeaderLoggedOut(props) {
         localStorage.setItem("complexappAvatar",response.data.avatar)
         props.setLoggedIn(true)
       } else{
-        console.log("Incorrect username /password")
+        console.log("Incorrect username / password")
       }
     } catch (e){
-      console.log("There was a problem.")
+      console.log("There was a problem!"
     }
   }
   return (
