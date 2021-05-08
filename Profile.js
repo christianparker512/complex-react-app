@@ -1,7 +1,22 @@
 import React, { useEffect } from "react"
 import Page from "./Page"
+import {useParams} from 'react-router-dom'
+import Axios from 'axios'
+import StateContext from `../StateContext`
 
 function Profile() {
+  const {username} = useParams()
+  const appState = useContext(StateContext)
+
+  useEffect(() => {
+    async function fetchData(){
+      try {
+        const response = await Axios.post(`/profile/${username}`,{token: appState.user.token})
+      }catch (e){
+        console.log("there was a problem")
+      }
+    }
+  }, [])
   return (
    <Page titl="Profile Screen">
      <h2>
