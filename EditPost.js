@@ -171,3 +171,4 @@ function EditPost(props) {
 }
 
 export default withRouter(EditPost)
+
