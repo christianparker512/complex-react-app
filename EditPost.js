@@ -1,11 +1,64 @@
-import React, { useEffect } from "react"
+import React, { useEffect, useState } from "react"
+import Page from './Page'
+import {useParams, Link} from 'react-router-dom'
+import Axios from 'axios'
+import LoadingDotsIcon from './LoadingDotsIcon'
+import ReactMarkDown from 'react-markdown'
+import ReactTooltip from 'react-tooltiop'
 
-function EditPost() {
-  return 
-<>
-Edit post
-</>
-  
+function ViewSinglePost() {
+const {id} = useParams()
+const [isLoading, setIsLoading] = useState(true)
+const [post, setPost] = useState()
+
+useEffect(() => {
+  const ourRequest = Axios.CancelToken.source()
+
+  async function fetchPost() {
+    try {
+        const response = await Axios.get('/post/${username}', {cancelToken: ourRequest.token})
+        setPost(response.data)
+        setIsLoading(false)
+      } catch(e) {
+      console.log("There was a problem or the request was cancelled.")
+    }
+  }
+  fetchPost()
+  return () => {
+    ourRequest.cancel()
+  }
+}, [])
+
+if (isLoading) return <Page title={post.title}>
+  <LoadingDotsIcon />
+  </Page>
+  const date = new Date(post.createdDate)
+  const dateFormatted = `${date.getMonth() +1}/${date.getDate()}/${date.getFullYear}`
+  return (
+   <Page>
+      <div className="d-flex justify-content-between">
+        <h2>{post.title}</h2>
+        <span className="pt-2">
+          <Link to={`/post/${post._id}/edit`} data-tip="Edit" data-for="edit" className="text-primary mr-2"><i className="fas fa-edit"></i></Link>
+          <ReactTooltip id="edit" className="custom-tooltip" />{" "}
+          <a data-tip="Delete" data-for="delete" className="delete-post-button text-danger"><i class="fas fa-trash"></i></a>
+          <ReactTooltip id="delete" className="custom-tooltip" />
+        </span>
+      </div>
+
+      <p class="text-muted small mb-4">
+        <Link to={`/profile/$/post.author.username}`}>
+          <img className="avatar-tiny" src={post.author.avatar} />
+        </Link>
+        Posted by <Link to={`/profile/${post.author.username}`} >{post.author.username}</Link> on {dateFormatted}
+      </p>
+
+      <div className="body-content">
+        <ReactMarkDown children={post.body} allowedTypes={["paragraphs", "strong", "emphasis", "text", "heading", "list", "listItem"]}/>
+      </div>
+
+   </Page>
+  )
 }
 
-export default EditPost
+export default ViewSinglePost
