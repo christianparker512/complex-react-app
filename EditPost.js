@@ -1,24 +1,46 @@
 import React, { useEffect, useState } from "react"
+import  {useImmerReducer} from 'use-immer'
 import Page from './Page'
 import {useParams, Link} from 'react-router-dom'
 import Axios from 'axios'
 import LoadingDotsIcon from './LoadingDotsIcon'
 import ReactMarkDown from 'react-markdown'
-import ReactTooltip from 'react-tooltiop'
+import ReactTooltip from 'react-tooltip'
 
 function ViewSinglePost() {
-const {id} = useParams()
-const [isLoading, setIsLoading] = useState(true)
-const [post, setPost] = useState()
+  const originalState ={
+    title: {
+      value: "",
+      hasErrors: false,
+      message: ""
+    }, 
+    body: {
+      alue: "",
+      hasErrors: false,
+      message: ""
+    },
+    isFetching: true,
+    isSaving: false,
+    id: useParams().id, 
+    sendCount: 0
+  }
+  function ourReducer(draft,action) {
+    switch(action.type){
+      case"fetchComplete":
+        draft.title.value = action.value.title 
+        draft.body.value = action.value.body
+        draft.isFetching = false
+        return 
+    }
+  }
+  const [state, dispatch] = useImmerReducer(ourReducer, originalState)
 
 useEffect(() => {
   const ourRequest = Axios.CancelToken.source()
-
   async function fetchPost() {
     try {
-        const response = await Axios.get('/post/${username}', {cancelToken: ourRequest.token})
-        setPost(response.data)
-        setIsLoading(false)
+        const response = await Axios.get('/post/${state.id}', {cancelToken: ourRequest.token})
+        dispatch({type: "fetchComplete", value: response.data})
       } catch(e) {
       console.log("There was a problem or the request was cancelled.")
     }
@@ -29,35 +51,30 @@ useEffect(() => {
   }
 }, [])
 
-if (isLoading) return <Page title={post.title}>
+if (state.isFetching) return <Page title={post.title}>
   <LoadingDotsIcon />
   </Page>
-  const date = new Date(post.createdDate)
-  const dateFormatted = `${date.getMonth() +1}/${date.getDate()}/${date.getFullYear}`
+
   return (
-   <Page>
-      <div className="d-flex justify-content-between">
-        <h2>{post.title}</h2>
-        <span className="pt-2">
-          <Link to={`/post/${post._id}/edit`} data-tip="Edit" data-for="edit" className="text-primary mr-2"><i className="fas fa-edit"></i></Link>
-          <ReactTooltip id="edit" className="custom-tooltip" />{" "}
-          <a data-tip="Delete" data-for="delete" className="delete-post-button text-danger"><i class="fas fa-trash"></i></a>
-          <ReactTooltip id="delete" className="custom-tooltip" />
-        </span>
-      </div>
+    <Page title="Edit Post">
+    <form >
+        <div className="form-group">
+          <label htmlFor="post-title" className="text-muted mb-1">
+            <small>Title</small>
+          </label>
+          <input value={state.title.value }autoFocus name="title" id="post-title" class="form-control form-control-lg form-control-title" type="text" placeholder="" autoComplete="off" />
+        </div>
 
-      <p class="text-muted small mb-4">
-        <Link to={`/profile/$/post.author.username}`}>
-          <img className="avatar-tiny" src={post.author.avatar} />
-        </Link>
-        Posted by <Link to={`/profile/${post.author.username}`} >{post.author.username}</Link> on {dateFormatted}
-      </p>
+        <div class="form-group">
+          <label htmlFor="post-body" class="text-muted mb-1 d-block">
+            <small>Body Content</small>
+          </label>
+          <textarea name="body" id="post-body" class="body-content tall-textarea form-control" type="text" value={state.body.value}/>
+        </div>
 
-      <div className="body-content">
-        <ReactMarkDown children={post.body} allowedTypes={["paragraphs", "strong", "emphasis", "text", "heading", "list", "listItem"]}/>
-      </div>
-
-   </Page>
+        <button class="btn btn-primary">Save Updates</button>
+      </form>
+      </Page>
   )
 }
 
