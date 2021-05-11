@@ -19,6 +19,7 @@ import CreatePost from "./components/CreatePost"
 import ViewSinglePost from "./components/ViewSinglePost"
 import FlashMessages from './components/FlashMessages'
 import Profile from './compenents/Profile'
+import EditPost from './componets/EditPost'
 function Main () {
   const initialState = {
     loggedIn: Boolean(localStorage.getItem("complexappToken")), 
@@ -73,8 +74,11 @@ return (
           <Route path="/" exact>
             {state.loggedIn ? <Home /> : <HomeGuest />}
             </Route>
-            <Route path="/post/:id">
+            <Route path="/post/:id" exact>
               <ViewSinglePost />
+            </Route>
+            <Route path="/post/:id/edit" exact>
+              <EditPost />
             </Route>
           <Route path="/create-post">
             <CreatePost addFlashMessage={addFlashMessage}/>
