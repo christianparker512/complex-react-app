@@ -22,6 +22,7 @@ function ProfileFollowers(props) {
         console.log("There was a problem.")
       }
     }
+    
     fetchPosts()
     return () => {
       ourRequest.cancel()
