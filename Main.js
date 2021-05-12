@@ -2,6 +2,7 @@ import React, { useState, useReducer, useEffect } from "react"
 import ReactDOM from "react-dom"
 import { useImmerReducer } from "use-immer"
 import { BrowserRouter, Switch, Route } from "react-router-dom"
+import { CSSTransition } from "react-transition-group"
 import Axios from "axios"
 Axios.defaults.baseURL = "http://localhost:8080"
 
@@ -22,6 +23,7 @@ import Profile from "./components/Profile"
 import EditPost from "./components/EditPost"
 import NotFound from "./components/NotFound"
 import Search from "./components/Search"
+import Chat from "./components/Chat"
 
 function Main() {
   const initialState = {
@@ -30,9 +32,10 @@ function Main() {
     user: {
       token: localStorage.getItem("complexappToken"),
       username: localStorage.getItem("complexappUsername"),
-      avatar: localStorage.getItem("complexappAvatar")
+      avatar: localStorage.getItem("complexappAvatar"),
     },
-    isSearchOpen: false
+    isSearchOpen: false,
+    isChatOpen: false,
   }
 
   function ourReducer(draft, action) {
@@ -52,6 +55,12 @@ function Main() {
         return
       case "closeSearch":
         draft.isSearchOpen = false
+        return
+      case "toggleChat":
+        draft.isChatOpen = !draft.isChatOpen
+        return
+      case "closeChat":
+        draft.isChatOpen = false
         return
     }
   }
@@ -102,7 +111,10 @@ function Main() {
               <NotFound />
             </Route>
           </Switch>
-          {state.isSearchOpen ? <Search /> : ""}
+          <CSSTransition timeout={330} in={state.isSearchOpen} classNames="search-overlay" unmountOnExit>
+            <Search />
+          </CSSTransition>
+          <Chat />
           <Footer />
         </BrowserRouter>
       </DispatchContext.Provider>
@@ -115,3 +127,4 @@ ReactDOM.render(<Main />, document.querySelector("#app"))
 if (module.hot) {
   module.hot.accept()
 }
+
