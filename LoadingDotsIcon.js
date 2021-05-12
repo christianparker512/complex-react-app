@@ -1,12 +1,9 @@
-import React, { useEffect } from "react"
+ React, { useEffect } from "react"
 
-function LoadingDotsIcon
-() {
+function LoadingDotsIcon() {
   return (
     <div className="dots-loading">
-      <div>
-        
-      </div>
+      <div></div>
     </div>
   )
 }
