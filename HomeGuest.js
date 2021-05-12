@@ -235,5 +235,4 @@ function HomeGuest() {
     </Page>
   )
 }
-
 export default HomeGuest
